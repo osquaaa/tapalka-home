@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Jura:wght@300..700&family=Unbounded:wght@200..900&display=swap"
+			rel="stylesheet"
+		/>
+		<title>SPASSKKOMBAT</title>
+		<style>
+			html,
+			body {
+				height: 100%;
+				margin: 0;
+				padding: 0;
+			}
+
+			body {
+				text-align: center;
+				background: #000;
+				height: 100%;
+				margin: 0;
+
+				font-family: 'Unbounded', serif;
+			}
+			/* Стили для топ-3 пользователей */
+			.top-user.gold {
+				background: linear-gradient(180deg, #ffbc6c -1.85%, #b0763f 98.15%),
+					#eee0;
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+				text-fill-color: transparent;
+				font-weight: 900;
+			}
+
+			.top-user.silver {
+				background: linear-gradient(180deg, #ffffff -1.85%, #7f7f7f 98.15%),
+					rgba(255, 255, 255, 0);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+				text-fill-color: transparent;
+			}
+
+			.top-user.bronze {
+				background: linear-gradient(180deg, #5f3300 -1.85%, #ffa652 98.15%),
+					#eee0;
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+				text-fill-color: transparent;
+			}
+			.top-user.looser {
+				background: linear-gradient(180deg, #c36d62 -1.85%, #ffa8a8 98.15%),
+					#eee0;
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+				text-fill-color: transparent;
+			}
+
+			/* Стили для точек на фоне */
+			#background-dots {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				pointer-events: none; /* Чтобы точки не мешали кликам по другим элементам */
+				z-index: -1; /* Чтобы точки были на фоне */
+				overflow: hidden;
+			}
+
+			.dot {
+				position: absolute;
+				background-color: white;
+				border-radius: 50%;
+				opacity: 0.1;
+				animation: moveDots 50s linear infinite, fadeIn 2s ease-in-out forwards; /* Добавляем анимацию появления и движения */
+				will-change: transform, opacity; /* Для улучшения производительности */
+			}
+
+			/* Анимация для медленного движения точек */
+
+			#coin {
+				width: 210px;
+				height: 210px;
+				background-color: #ffffff38;
+				backdrop-filter: blur(30px);
+				cursor: pointer;
+				margin: 0 auto;
+				border-radius: 50%;
+				border: 1px solid #fff;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 70px;
+			}
+			#coin:active {
+				background-color: #ffffffd0;
+			}
+			#stats {
+				margin-top: 20px;
+				color: #fff;
+
+				border-radius: 20px;
+				font-weight: 800;
+			}
+
+			button {
+				font-family: 'Jura', serif;
+				margin: 10px;
+				padding: 10px 20px;
+				font-size: 16px;
+				background-color: #ffffff;
+				border: none;
+				color: #000000;
+				border: 1px solid #fff;
+				font-weight: 700;
+			}
+			#top-users {
+				margin-top: 30px;
+				padding: 20px;
+				background-color: #ffffff08;
+				backdrop-filter: blur(30px);
+				border: 1px solid #ddd;
+				max-width: 400px;
+				margin-left: auto;
+				margin-right: auto;
+				font-family: 'Jura', serif;
+				font-weight: 900;
+				color: #fff;
+			}
+
+			#top-users p {
+				font-size: 18px;
+				margin: 5px 0;
+			}
+			h1 span {
+				color: #bfbfbf;
+			}
+			h1 {
+				color: #ffffff;
+			}
+			h2 {
+				color: #ffffff;
+			}
+			.prize-sub {
+				font-size: 13px;
+				color: #d4d4d4;
+				font-family: jura;
+				font-weight: 900;
+				padding-left: 10px;
+				padding-right: 10px;
+			}
+			.my-email {
+				color: #fff;
+				font-size: 14px;
+			}
+			#greeting {
+				color: #fff;
+				font-family: jura;
+				font-weight: 900;
+			}
+			#logout-btn {
+				padding: 5px;
+			}
+			.blur-pole {
+				background-color: #fff;
+				height: 150px;
+				width: 150px;
+				position: absolute;
+				filter: blur(120px);
+				z-index: -10;
+			}
+			.prize {
+				background: linear-gradient(180deg, #36eeff -1.85%, #52c2ff 98.15%),
+					#eee0;
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+				text-fill-color: transparent;
+			}
+			.divider {
+				max-width: 300px; /* Ширина линии 80% от родительского контейнера */
+				height: 2px; /* Толщина линии */
+				background-color: white; /* Цвет линии */
+				border: none; /* Убираем любые другие границы */
+				margin: 20px auto; /* Центрируем и добавляем отступы сверху и снизу */
+			}
+			.reward {
+				background: linear-gradient(180deg, #36eeff -1.85%, #52c2ff 98.15%),
+					#eee0;
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+				text-fill-color: transparent;
+				font-weight: 900;
+			}
+			li {
+				font-size: 10px;
+			}
+			.rules-span {
+				font-size: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="background-dots"></div>
+		<div class="blur-pole"></div>
+		<!-- Элемент для отображения приветствия -->
+		<h1>SPASSK | KOMBAT</h1>
+			<div id="online-users">
+				<!-- Список пользователей будет обновляться здесь -->
+			</div>
+		</div>
+		<!-- Приветствие пользователя -->
+		<div id="greeting"></div>
+		<div id="register-form" style="display: block">
+			<input
+				type="text"
+				id="register-username"
+				placeholder="Имя пользователя"
+			/>
+			<input type="password" id="register-password" placeholder="Пароль" />
+			<button id="register-btn">Зарегистрироваться</button>
+		</div>
+
+		<!-- Форма авторизации -->
+		<div id="login-form" style="display: block">
+			<input type="text" id="login-username" placeholder="Имя пользователя" />
+			<input type="password" id="login-password" placeholder="Пароль" />
+			<button id="login-btn">Войти</button>
+		</div>
+		<!-- <div id="login-form" style="display: none">
+			<h2>Авторизация</h2>
+			<input id="login-username" placeholder="Имя пользователя" />
+			<input id="login-password" type="password" placeholder="Пароль" />
+			<button id="login-btn">Войти</button>
+			<p>Нет аккаунта? <span id="show-register">Зарегистрируйтесь</span></p>
+		</div>
+		<div id="register-form" style="display: none">
+			<h2>Регистрация</h2>
+			<input id="register-username" placeholder="Имя пользователя" />
+			<input id="register-password" type="password" placeholder="Пароль" />
+			<button id="register-btn" style="color: #fff">Зарегистрироваться</button>
+			<p>Есть аккаунт? <span id="show-login">Войти</span></p>
+		</div> -->
+		<!-- Кнопка выхода -->
+		<button id="logout-btn">Выход</button>
+
+		<div id="coin" noselect></div>
+		<div id="stats">
+			<p id="score">Очков: 0</p>
+			<p id="coins">Монеты: 0</p>
+		</div>
+		<button id="upgrade-click">+1 К КЛИКУ</button>
+		<button id="upgrade-double">ДАБЛ КЛИК</button>
+
+		<!-- Белая линия перед топом пользователей -->
+		<hr class="divider" />
+		<h2>Топ пользователей</h2>
+		<div class="prize-sub">
+			Первым 3 пользователям в топе будет <br />
+			выплачен общий призовой
+			<div class="my-email reward">1000 рублей</div>
+			(до 02.12.24).<br />
+			Для выдачи призовых писать на почту
+			<div class="my-email">lohanton007@gmail.com</div>
+		</div>
+		<div id="top-users">
+			<!-- Здесь будет отображаться список топовых пользователей -->
+		</div>
+		<div
+			class="rules-prize"
+			style="color: #fff; margin-top: 10px; font-weight: 800"
+		>
+			Правила и условия<br /><br />
+
+			<span class="rules-span"
+				>1. Приз будет выдан в случае корректной почты в нике,<br />
+				или при наличии доказательств<br />
+				на принадлежность аккаунта</span
+			><br /><br />
+			<span class="rules-span"
+				>2. Вы можете фармить очки только с 1 аккаунта, <br />выплаты за другие
+				(в случае победы сразу нескольких аккаунтов) не будет произведено<br />,
+				а ваше место передано игроку перед вами</span
+			>
+		</div>
+		<script src="game.js"></script>
+	</body>
+</html>
