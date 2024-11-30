@@ -173,6 +173,10 @@ app.get('/top-users', async (req, res) => {
 })
 
 // Динамический порт, предоставленный Render
-app.listen(process.env.PORT || 10000, () => {
-	console.log('Сервер запущен')
-})
+const http = require("http");
+const server = http.createServer((req, res) => {
+  res.end("Hello from server!");
+});
+
+const port = process.env.PORT || 3000; // Используем порт от Vercel
+server.listen(port, () => console.log(`Server running on port ${port}`));
