@@ -140,6 +140,27 @@ app.post('/click/:username', authenticate, async (req, res) => {
 	res.json(user)
 })
 
+app.post('/upgrade/double/:username', async (req, res) => {
+	const { username } = req.params
+	const user = await User.findOne({ username })
+
+	if (!user) {
+		return res.status(404).json({ message: 'Пользователь не найден' })
+	}
+
+	const upgradePrice = user.multiplier * 10000
+	if (user.coins < upgradePrice) {
+		return res
+			.status(400)
+			.json({ message: 'Недостаточно монет для покупки улучшения' })
+	}
+
+	user.coins -= upgradePrice
+	user.multiplier *= 2
+	await user.save()
+
+	res.json({ message: 'Улучшение успешно куплено', user })
+})
 // Роут для покупки улучшения +1 к монетам за клик
 app.post('/upgrade/click/:username', authenticate, async (req, res) => {
 	const { username } = req.params
@@ -176,11 +197,6 @@ app.get('/top-users', async (req, res) => {
 	}
 })
 
-// Динамический порт, предоставленный Render
-// const http = require("http");
-// const server = http.createServer((req, res) => {
-//   res.end("Hello from server!");
-// });
 
 app.listen(process.env.PORT || 3000, () => {
 	console.log('Server is running...');
