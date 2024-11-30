@@ -30,17 +30,16 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema)
 
 const app = express()
-const corsOptions = {
-	origin: '*',
-	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-	allowedHeaders: ['Content-Type', 'Authorization'],
-}
-app.use(cors(corsOptions))
 
-app.options('*', cors()) // Обработка предзапросов
+app.use(cors())
+
+// app.options('*', cors()) // Обработка предзапросов
 app.use(express.json())
 app.use(express.static(__dirname))
-
+// Маршрут для главной страницы
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+})
 const SECRET_KEY = 'secretkey' // Ваш секретный ключ для JWT
 
 // Регистрация пользователя
@@ -178,5 +177,6 @@ app.get('/top-users', async (req, res) => {
 //   res.end("Hello from server!");
 // });
 
-const port = process.env.PORT || 3000; // Используем порт от Vercel
-server.listen(port, () => console.log(`Server running on port ${port}`));
+app.listen(process.env.PORT || 3000, () => {
+	console.log('Server is running...');
+  });
