@@ -57,7 +57,51 @@ async function fetchUser() {
         alert(err.message);
     }
 }
+async function fetchTopUsers() {
+	try {
+		const response = await fetch(`${apiUrl}/top-users`)
+		if (!response.ok) {
+			throw new Error('Ошибка при получении топа пользователей')
+		}
+		const users = await response.json()
+		displayTopUsers(users) // Обновляем интерфейс с топом
+	} catch (err) {
+		alert(err.message)
+	}
+}
 
+// Функция для отображения топа пользователей
+function displayTopUsers(users) {
+	const topUsersList = document.getElementById('top-users')
+	topUsersList.innerHTML = '' // Очищаем текущий список
+
+	users.forEach((user, index) => {
+		const userElement = document.createElement('p')
+		let prizeText = ''
+		if (index === 0) {
+			userElement.classList.add('top-user', 'gold')
+			prizeText = '(500 руб)'
+		} else if (index === 1) {
+			userElement.classList.add('top-user', 'silver')
+			prizeText = '(300 руб)'
+		} else if (index === 2) {
+			userElement.classList.add('top-user', 'bronze')
+			prizeText = '(250 руб)'
+		} else if (index === 9) {
+			userElement.classList.add('top-user', 'looser')
+			prizeText = '(ЛОХ)'
+		} else {
+			userElement.classList.add('top-user')
+		}
+
+		userElement.innerHTML = `${user.username}: ${user.score} очков <span class="prize">${prizeText}</span>`
+		topUsersList.appendChild(userElement)
+	})
+}
+
+// Загружаем топ пользователей при загрузке страницы
+fetchTopUsers()
+setInterval(fetchTopUsers, 7000)
 // Функция для клика по монете
 async function clickCoin() {
     if (!token) return;
