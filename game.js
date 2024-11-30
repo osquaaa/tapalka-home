@@ -1,3 +1,4 @@
+
 let username = localStorage.getItem('username') || 'guest (без аккаунта)'
 let token = localStorage.getItem('token')
 let score = 0
@@ -8,34 +9,30 @@ let multiplier = 1
 const apiUrl = 'https://tapalka-home.onrender.com' // Ваш адрес на Render
 
 function updateUI() {
-	const registerForm = document.getElementById('register-form')
-	const loginForm = document.getElementById('login-form')
-	const logoutBtn = document.getElementById('logout-btn')
-	const greeting = document.getElementById('greeting')
-	const scoreElement = document.getElementById('score')
-	const coinsElement = document.getElementById('coins')
-	const upgradeClickElement = document.getElementById('upgrade-click')
-	const upgradeDoubleElement = document.getElementById('upgrade-double')
-
-	// Если пользователь авторизован
+	const registerForm = document.getElementById('register-form');
+	const loginForm = document.getElementById('login-form');
+	const logoutBtn = document.getElementById('logout-btn');
+	const greeting = document.getElementById('greeting');
+	const scoreElement = document.getElementById('score');
+	const coinsElement = document.getElementById('coins');
+  
 	if (token) {
-		registerForm.style.display = 'none' // Скрыть форму регистрации
-		loginForm.style.display = 'none' // Скрыть форму авторизации
-		logoutBtn.style.display = 'block' // Показать кнопку выхода
-		greeting.textContent = `Привет, ${username}` // Показать приветствие
+	  registerForm.style.display = 'none';
+	  loginForm.style.display = 'none';
+	  logoutBtn.style.display = 'block';
+	  greeting.textContent = `Привет, ${username}`;
+  
+	  // Проверка рол
 	} else {
-		registerForm.style.display = 'block' // Показать форму регистрации
-		loginForm.style.display = 'block' // Показать форму авторизации
-		logoutBtn.style.display = 'none' // Скрыть кнопку выхода
-		greeting.textContent = '' // Убрать приветствие
+	  registerForm.style.display = 'block';
+	  loginForm.style.display = 'block';
+	  logoutBtn.style.display = 'none';
+	  greeting.textContent = '';
 	}
-
-	// Обновление UI с данными пользователя
-	scoreElement.textContent = `Очков: ${score}`
-	coinsElement.textContent = `Монеты: ${coins}`
-	upgradeClickElement.textContent = `+1 К КЛИКУ (${coinsPerClick * 100} монет)`
-	upgradeDoubleElement.textContent = `ДАБЛ КЛИК (${multiplier * 10000} монет)`
-}
+  
+	scoreElement.textContent = `Очков: ${score}`;
+	coinsElement.textContent = `Монеты: ${coins}`;
+  }
 
 // Функция для создания летящих точек на фоне
 function createDots() {
@@ -78,6 +75,12 @@ async function fetchUser() {
 		alert(err.message)
 	}
 }
+// Функция для отображения панели администратора
+
+
+// Проверка, является ли текущий пользователь администратором
+
+// Загрузка админской панели при успешной авторизации
 
 // Функция для получения топа пользователей
 async function fetchTopUsers() {
@@ -194,79 +197,80 @@ async function buyDoubleUpgrade() {
 
 // Функции для регистрации и авторизации
 async function register() {
-	const usernameInput = document.getElementById('register-username').value
-	const passwordInput = document.getElementById('register-password').value
-
+	const usernameInput = document.getElementById('register-username').value;
+	const passwordInput = document.getElementById('register-password').value;
+  
 	if (!usernameInput || !passwordInput) {
-		alert('Пожалуйста, заполните все поля')
-		return
+	  alert('Пожалуйста, заполните все поля');
+	  return;
 	}
-
+  
 	try {
-		const response = await fetch(`${apiUrl}/register`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				username: usernameInput,
-				password: passwordInput,
-			}),
-		})
-
-		if (!response.ok) {
-			throw new Error('Ошибка при регистрации')
-		}
-
-		const data = await response.json()
-		localStorage.setItem('token', data.token)
-		username = usernameInput
-		localStorage.setItem('username', username)
-		alert('Регистрация успешна!')
-		fetchUser()
+	  const response = await fetch(`${apiUrl}/register`, {
+		method: 'POST',
+		headers: {
+		  'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+		  username: usernameInput,
+		  password: passwordInput,
+		  role: 'user' // Указываем роль по умолчанию
+		}),
+	  });
+  
+	  if (!response.ok) {
+		throw new Error('Ошибка при регистрации');
+	  }
+  
+	  const data = await response.json();
+	  localStorage.setItem('token', data.token);
+	  username = usernameInput;
+	  localStorage.setItem('username', username);
+	  alert('Регистрация успешна!');
+	  location.reload();  // Обновляем страницу после регистрации
 	} catch (err) {
-		alert(err.message)
+	  alert(err.message);
 	}
-}
-
-async function login() {
-	const usernameInput = document.getElementById('login-username').value
-	const passwordInput = document.getElementById('login-password').value
-
+  }
+  
+  async function login() {
+	const usernameInput = document.getElementById('login-username').value;
+	const passwordInput = document.getElementById('login-password').value;
+  
 	if (!usernameInput || !passwordInput) {
-		alert('Пожалуйста, заполните все поля')
-		return
+	  alert('Пожалуйста, заполните все поля');
+	  return;
 	}
-
+  
 	try {
-		const response = await fetch(`${apiUrl}/login`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				username: usernameInput,
-				password: passwordInput,
-			}),
-		})
-
-		if (!response.ok) {
-			const errorData = await response.json()
-			console.error('Ошибка ответа:', errorData)
-			throw new Error(errorData.message || 'Ошибка авторизации')
-		}
-
-		const data = await response.json()
-		localStorage.setItem('token', data.token) // Сохраняем токен
-		localStorage.setItem('username', usernameInput) // Сохраняем username
-		username = usernameInput // Обновляем значение переменной username
-
-		alert('Авторизация успешна!')
-		fetchUser() // Функция для получения данных пользователя с сервера
+	  const response = await fetch(`${apiUrl}/login`, {
+		method: 'POST',
+		headers: {
+		  'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+		  username: usernameInput,
+		  password: passwordInput,
+		}),
+	  });
+  
+	  if (!response.ok) {
+		const errorData = await response.json();
+		console.error('Ошибка ответа:', errorData);
+		throw new Error(errorData.message || 'Ошибка авторизации');
+	  }
+  
+	  const data = await response.json();
+	  localStorage.setItem('token', data.token); // Сохраняем токен
+	  localStorage.setItem('username', usernameInput); // Сохраняем username
+	  username = usernameInput; // Обновляем значение переменной username
+  
+	  alert('Авторизация успешна!');
+	  location.reload();  // Обновляем страницу после авторизации
 	} catch (err) {
-		alert(err.message)
+	  alert(err.message);
 	}
-}
+  }
 
 // Обработчики для кнопок
 document.getElementById('coin').addEventListener('click', clickCoin)

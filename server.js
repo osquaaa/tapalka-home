@@ -89,6 +89,11 @@ app.post('/login', async (req, res) => {
 	res.json({ token })
 })
 
+// Роут для получения списка всех пользователей (только для админа)
+
+
+// Роут для удаления пользователя (только для админа)
+
 function authenticate(req, res, next) {
 	const token = req.headers.authorization?.split(' ')[1]
 	if (!token) {
