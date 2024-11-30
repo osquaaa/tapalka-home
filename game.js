@@ -51,6 +51,7 @@ function createDots() {
 }
 
 // Функция для обновления данных пользователя
+// Функция для обновления данных пользователя
 async function fetchUser() {
 	if (!token) return
 
@@ -69,61 +70,93 @@ async function fetchUser() {
 		coinsPerClick = user.coinsPerClick
 		multiplier = user.multiplier
 
+		// Показать место пользователя в топе
+		await fetchTopUsers(user)
+
 		// Показать приветствие после успешной загрузки данных пользователя
 		updateUI()
 	} catch (err) {
 		alert(err.message)
 	}
 }
-// Функция для отображения панели администратора
 
+// Функция для получения топа пользователей
+
+// Функция для отображения панели администратора
+// Функция для получения позиции пользователя в топе
 
 // Проверка, является ли текущий пользователь администратором
 
 // Загрузка админской панели при успешной авторизации
 
 // Функция для получения топа пользователей
-async function fetchTopUsers() {
+async function fetchTopUsers(currentUser) {
 	try {
 		const response = await fetch(`${apiUrl}/top-users`)
 		if (!response.ok) {
 			throw new Error('Ошибка при получении топа пользователей')
 		}
 		const users = await response.json()
+		const position = users.findIndex(user => user.username === currentUser.username)
+
+		// Обновление UI с местом пользователя
+		const positionElement = document.getElementById('user-position')
+		if (position !== -1) {
+			positionElement.textContent = `Ваше место в топе: #${position + 1}`
+		} else {
+			positionElement.textContent = 'Вы не в топе'
+		}
+
 		displayTopUsers(users) // Обновляем интерфейс с топом
 	} catch (err) {
 		alert(err.message)
 	}
 }
+function getUserRank(users, username) {
+	const user = users.find(user => user.username === username);
+	if (user) {
+	  return users.indexOf(user) + 1;  // Индекс в массиве + 1 дает место
+	}
+	return null; // Если пользователь не найден, возвращаем null
+  }
 
 // Функция для отображения топа пользователей
 function displayTopUsers(users) {
-	const topUsersList = document.getElementById('top-users')
-	topUsersList.innerHTML = '' // Очищаем текущий список
-
+	const topUsersList = document.getElementById('top-users');
+	topUsersList.innerHTML = ''; // Очищаем текущий список
+  
+	// Получаем позицию текущего пользователя в топе
+	const userRank = getUserRank(users, username);
+  
 	users.forEach((user, index) => {
-		const userElement = document.createElement('p')
-		let prizeText = ''
-		if (index === 0) {
-			userElement.classList.add('top-user', 'gold')
-			prizeText = '(500 руб)'
-		} else if (index === 1) {
-			userElement.classList.add('top-user', 'silver')
-			prizeText = '(300 руб)'
-		} else if (index === 2) {
-			userElement.classList.add('top-user', 'bronze')
-			prizeText = '(250 руб)'
-		} else if (index === 9) {
-			userElement.classList.add('top-user', 'looser')
-			prizeText = '(ЛОХ)'
-		} else {
-			userElement.classList.add('top-user')
-		}
-
-		userElement.innerHTML = `${user.username}: ${user.score} очков <span class="prize">${prizeText}</span>`
-		topUsersList.appendChild(userElement)
-	})
-}
+	  const userElement = document.createElement('p');
+	  let prizeText = '';
+	  if (index === 0) {
+		userElement.classList.add('top-user', 'gold');
+		prizeText = '(500 руб)';
+	  } else if (index === 1) {
+		userElement.classList.add('top-user', 'silver');
+		prizeText = '(300 руб)';
+	  } else if (index === 2) {
+		userElement.classList.add('top-user', 'bronze');
+		prizeText = '(250 руб)';
+	  } else if (index === 9) {
+		userElement.classList.add('top-user', 'looser');
+		prizeText = '(ЛОХ)';
+	  } else {
+		userElement.classList.add('top-user');
+	  }
+  
+	  userElement.innerHTML = `${user.username}: ${user.score} очков <span class="prize">${prizeText}</span>`;
+	  topUsersList.appendChild(userElement);
+	});
+  
+	// Отображаем место пользователя
+	if (userRank) {
+	  const rankElement = document.getElementById('user-rank');
+	  rankElement.textContent = `Ваше место в топе: ${userRank}`;
+	}
+  }
 
 // Загружаем топ пользователей при загрузке страницы
 fetchTopUsers()
