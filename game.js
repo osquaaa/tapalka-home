@@ -5,7 +5,7 @@ let coins = 0
 let coinsPerClick = 1
 let multiplier = 1
 
-const apiUrl = 'https://tapalka-arqm.onrender.com' // Ваш адрес на Render
+const apiUrl = 'http://localhost:10000' // Ваш адрес на Render
 
 function updateUI() {
 	const registerForm = document.getElementById('register-form')
