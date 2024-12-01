@@ -83,10 +83,10 @@ function displayTopUsers(users) {
 			prizeText = '(500 руб)'
 		} else if (index === 1) {
 			userElement.classList.add('top-user', 'silver')
-			prizeText = '(300 руб)'
+			prizeText = '(150 руб)'
 		} else if (index === 2) {
 			userElement.classList.add('top-user', 'bronze')
-			prizeText = '(250 руб)'
+			prizeText = '(100 руб)'
 		} else if (index === 9) {
 			userElement.classList.add('top-user', 'looser')
 			prizeText = '(ЛОХ)'
