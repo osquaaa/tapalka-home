@@ -62,7 +62,7 @@ app.post('/register', async (req, res) => {
 	await newUser.save()
 
 	// Создаем JWT
-	const token = jwt.sign({ id: newUser._id }, SECRET_KEY, { expiresIn: '2d' })
+	const token = jwt.sign({ id: newUser._id }, SECRET_KEY, { expiresIn: '3d' })
 
 	res.json({ token })
 })
