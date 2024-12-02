@@ -38,33 +38,44 @@ app.use(express.json())
 app.use(express.static(__dirname))
 // Маршрут для главной страницы
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+	res.sendFile(path.join(__dirname, 'index.html'))
 })
 const SECRET_KEY = 'secretkey' // Ваш секретный ключ для JWT
 
 // Регистрация пользователя
 app.post('/register', async (req, res) => {
-	const { username, password } = req.body
+	try {
+		const { username, password } = req.body
 
-	// Проверяем, существует ли уже пользователь с таким именем
-	const existingUser = await User.findOne({ username })
-	if (existingUser) {
-		return res
-			.status(400)
-			.json({ message: 'Пользователь с таким именем уже существует' })
+		// Проверяем, существует ли уже пользователь с таким именем
+		const existingUser = await User.findOne({ username })
+		if (existingUser) {
+			return res
+				.status(400)
+				.json({ message: 'Пользователь с таким именем уже существует' })
+		}
+		if (!username || !password) {
+			return res
+				.status(400)
+				.json({ message: 'Необходимо указать имя пользователя и пароль' })
+		}
+		// Хешируем пароль
+		const hashedPassword = await bcrypt.hash(password, 10)
+
+		// Создаем нового пользователя
+		const newUser = new User({ username, password: hashedPassword })
+		await newUser.save()
+
+		// Создаем JWT
+		const token = jwt.sign({ id: newUser._id }, SECRET_KEY, { expiresIn: '3d' })
+
+		res.status(201).json({ token })
+	} catch (err) {
+		console.error('Ошибка при регистрации:', err)
+		res
+			.status(500)
+			.json({ message: 'Ошибка на сервере. Повторите попытку позже.' })
 	}
-
-	// Хешируем пароль
-	const hashedPassword = await bcrypt.hash(password, 10)
-
-	// Создаем нового пользователя
-	const newUser = new User({ username, password: hashedPassword })
-	await newUser.save()
-
-	// Создаем JWT
-	const token = jwt.sign({ id: newUser._id }, SECRET_KEY, { expiresIn: '3d' })
-
-	res.json({ token })
 })
 
 // Авторизация пользователя
@@ -90,7 +101,6 @@ app.post('/login', async (req, res) => {
 })
 
 // Роут для получения списка всех пользователей (только для админа)
-
 
 // Роут для удаления пользователя (только для админа)
 
@@ -197,7 +207,6 @@ app.get('/top-users', async (req, res) => {
 	}
 })
 
-
 app.listen(process.env.PORT || 10000, () => {
-	console.log('Server is running...');
-  })
+	console.log('Server is running...')
+})
