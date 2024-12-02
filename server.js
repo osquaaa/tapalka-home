@@ -1,21 +1,36 @@
 const express = require('express')
-
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const cors = require('cors')
+const path = require('path')
 
 // Подключение к MongoDB Atlas (замените ваш URI)
 const mongoURI =
 	'mongodb+srv://myUser:denclassik@cluster0.1jt61.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
 
+mongoose.set('strictQuery', false) // Убирает лишние предупреждения
 mongoose
 	.connect(mongoURI, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
 	})
 	.then(() => console.log('Подключение к базе данных успешно установлено'))
-	.catch(err => console.error('Ошибка подключения к базе данных:', err))
+	.catch(err => {
+		console.error('Ошибка подключения к базе данных:', err)
+		process.exit(1) // Завершаем процесс при ошибке подключения
+	})
+
+// Определение схемы и модели пользователя
+const app = express()
+
+// Middleware
+app.use(cors())
+app.use(express.json())
+app.use(express.static(__dirname))
+
+// JWT секретный ключ
+const SECRET_KEY = 'secretkey'
 
 // Определение схемы и модели пользователя
 const userSchema = new mongoose.Schema({
@@ -29,75 +44,56 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema)
 
-const app = express()
-
-app.use(cors())
-
-// app.options('*', cors()) // Обработка предзапросов
-app.use(express.json())
-app.use(express.static(__dirname))
 // Маршрут для главной страницы
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, 'index.html'))
 })
-const SECRET_KEY = 'secretkey' // Ваш секретный ключ для JWT
 
 // Регистрация пользователя
 app.post('/register', async (req, res) => {
 	try {
 		const { username, password } = req.body
 
-		// Проверяем, существует ли уже пользователь с таким именем
 		const existingUser = await User.findOne({ username })
 		if (existingUser) {
 			return res
 				.status(400)
 				.json({ message: 'Пользователь с таким именем уже существует' })
 		}
-		if (!username || !password) {
-			return res
-				.status(400)
-				.json({ message: 'Необходимо указать имя пользователя и пароль' })
-		}
-		// Хешируем пароль
-		const hashedPassword = await bcrypt.hash(password, 10)
 
-		// Создаем нового пользователя
+		const hashedPassword = await bcrypt.hash(password, 10)
 		const newUser = new User({ username, password: hashedPassword })
 		await newUser.save()
 
-		// Создаем JWT
 		const token = jwt.sign({ id: newUser._id }, SECRET_KEY, { expiresIn: '3d' })
-
-		res.status(201).json({ token })
-	} catch (err) {
-		console.error('Ошибка при регистрации:', err)
-		res
-			.status(500)
-			.json({ message: 'Ошибка на сервере. Повторите попытку позже.' })
+		res.json({ token })
+	} catch (error) {
+		console.error('Ошибка при регистрации:', error)
+		res.status(500).json({ message: 'Внутренняя ошибка сервера' })
 	}
 })
 
 // Авторизация пользователя
 app.post('/login', async (req, res) => {
-	const { username, password } = req.body
+	try {
+		const { username, password } = req.body
 
-	// Находим пользователя по имени
-	const user = await User.findOne({ username })
-	if (!user) {
-		return res.status(400).json({ message: 'Пользователь не найден' })
+		const user = await User.findOne({ username })
+		if (!user) {
+			return res.status(400).json({ message: 'Пользователь не найден' })
+		}
+
+		const isPasswordValid = await bcrypt.compare(password, user.password)
+		if (!isPasswordValid) {
+			return res.status(400).json({ message: 'Неверный пароль' })
+		}
+
+		const token = jwt.sign({ id: user._id }, SECRET_KEY, { expiresIn: '1h' })
+		res.json({ token })
+	} catch (error) {
+		console.error('Ошибка при авторизации:', error)
+		res.status(500).json({ message: 'Внутренняя ошибка сервера' })
 	}
-
-	// Сравниваем пароли
-	const isPasswordValid = await bcrypt.compare(password, user.password)
-	if (!isPasswordValid) {
-		return res.status(400).json({ message: 'Неверный пароль' })
-	}
-
-	// Создаем JWT
-	const token = jwt.sign({ id: user._id }, 'secretkey', { expiresIn: '1h' })
-
-	res.json({ token })
 })
 
 // Роут для получения списка всех пользователей (только для админа)
@@ -123,15 +119,20 @@ function authenticate(req, res, next) {
 
 // Роут для получения данных пользователя
 app.get('/user/:username', authenticate, async (req, res) => {
-	const { username } = req.params
-	let user = await User.findOne({ username })
+	try {
+		const { username } = req.params
+		let user = await User.findOne({ username })
 
-	if (!user) {
-		user = new User({ username })
-		await user.save()
+		if (!user) {
+			user = new User({ username })
+			await user.save()
+		}
+
+		res.json(user)
+	} catch (error) {
+		console.error('Ошибка получения данных пользователя:', error)
+		res.status(500).json({ message: 'Внутренняя ошибка сервера' })
 	}
-
-	res.json(user)
 })
 
 // Роут для обработки кликов
@@ -142,7 +143,13 @@ app.post('/click/:username', authenticate, async (req, res) => {
 	if (!user) {
 		return res.status(404).json({ message: 'Пользователь не найден' })
 	}
-
+	process.on('SIGINT', () => {
+		console.log('Отключение от базы данных...')
+		mongoose.connection.close(() => {
+			console.log('Соединение с базой данных закрыто')
+			process.exit(0)
+		})
+	})
 	user.score += user.coinsPerClick * user.multiplier
 	user.coins += user.coinsPerClick
 	await user.save()
@@ -207,6 +214,7 @@ app.get('/top-users', async (req, res) => {
 	}
 })
 
-app.listen(process.env.PORT || 10000, () => {
-	console.log('Server is running...')
+const PORT = process.env.PORT || 10000
+app.listen(PORT, () => {
+	console.log(`Сервер запущен на порту ${PORT}`)
 })
