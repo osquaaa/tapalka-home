@@ -150,11 +150,16 @@ app.post('/click/:username', authenticate, async (req, res) => {
 			process.exit(0)
 		})
 	})
+	// Обновляем только монеты и счет
 	user.score += user.coinsPerClick * user.multiplier
 	user.coins += user.coinsPerClick
+
 	await user.save()
 
-	res.json(user)
+	res.json({
+		score: user.score,
+		coins: user.coins,
+	})
 })
 
 app.post('/upgrade/double/:username', async (req, res) => {
