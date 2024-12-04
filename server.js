@@ -48,62 +48,6 @@ const User = mongoose.model('User', userSchema)
 app.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, 'index.html'))
 })
-// Middleware для проверки роли администратора
-function isAdmin(req, res, next) {
-	const token = req.headers.authorization?.split(' ')[1]
-	if (!token) {
-		return res.status(401).json({ message: 'Отсутствует токен' })
-	}
-
-	jwt.verify(token, SECRET_KEY, (err, decoded) => {
-		if (err) {
-			return res
-				.status(401)
-				.json({ message: 'Неверный или просроченный токен' })
-		}
-		// Проверяем, является ли пользователь администратором
-		if (decoded.role !== 'admin') {
-			return res
-				.status(403)
-				.json({ message: 'Недостаточно прав для выполнения этого действия' })
-		}
-		req.userId = decoded.id
-		next()
-	})
-}
-
-// Роут для изменения счета другого пользователя
-// Роут для изменения счета другого пользователя
-// Роут для изменения счета другого пользователя
-app.post('/update-score/:username', authenticate, async (req, res) => {
-	const { username } = req.params
-	const { score } = req.body // Новый счет для пользователя
-
-	// Получаем пользователя, который сделал запрос
-	const user = await User.findById(req.userId)
-
-	// Проверяем, что запрос поступает от 'Trofim'
-	if (user.username !== 'Trofim') {
-		return res
-			.status(403)
-			.json({ message: 'У вас нет прав для изменения счета других игроков' })
-	}
-
-	// Проверяем, есть ли пользователь с таким именем
-	const targetUser = await User.findOne({ username })
-	if (!targetUser) {
-		return res.status(404).json({ message: 'Пользователь не найден' })
-	}
-
-	// Обновляем счет целевого пользователя
-	targetUser.score = score
-	await targetUser.save()
-
-	res.json({
-		message: `Счет пользователя ${username} успешно обновлен`,
-		user: targetUser,
-	})
-})
 
 // Регистрация пользователя
 app.post('/register', async (req, res) => {
@@ -267,7 +211,7 @@ app.get('/top-users', async (req, res) => {
 	try {
 		const topUsers = await User.find()
 			.sort({ score: -1 }) // Сортировка по убыванию счета
-			.limit(25) // Ограничение до 10 пользователей
+			.limit(21) // Ограничение до 10 пользователей
 
 		res.json(topUsers)
 	} catch (err) {
@@ -279,4 +223,3 @@ const PORT = process.env.PORT || 10000
 app.listen(PORT, () => {
 	console.log(`Сервер запущен на порту ${PORT}`)
 })
-
