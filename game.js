@@ -36,11 +36,6 @@ function updateUI() {
 
 	scoreElement.textContent = `Очков: ${score}`
 	coinsElement.textContent = `Монеты: ${coins}`
-	if (username === 'Trofim') {
-		document.getElementById('update-score-btn').style.display = 'block'
-	} else {
-		document.getElementById('update-score-btn').style.display = 'none'
-	}
 }
 
 // Функция для обновления данных пользователя
@@ -99,16 +94,16 @@ function displayTopUsers(users) {
 		} else if (index === 3) {
 			userElement.classList.add('top-user', 'bronze')
 			prizeText = '(100 руб)'
-		} else if (index === 4) {
+		}else if (index === 4) {
 			userElement.classList.add('top-user', 'bronze')
 			prizeText = '(100 руб)'
-		} else if (index === 5) {
+		}else if (index === 5) {
 			userElement.classList.add('top-user', 'bronze')
 			prizeText = '(50 руб)'
-		} else if (index === 6) {
+		}else if (index === 6) {
 			userElement.classList.add('top-user', 'bronze')
 			prizeText = '(50 руб)'
-		} else if (index === 20) {
+		}else if (index === 20) {
 			userElement.classList.add('top-user', 'looser')
 			prizeText = '(ЛОХ)'
 		} else {
@@ -123,53 +118,6 @@ function displayTopUsers(users) {
 // Загружаем топ пользователей при загрузке страницы
 fetchTopUsers()
 setInterval(fetchTopUsers, 7000)
-// Функция для изменения счета другого пользователя (например, игрока с ником 'Trofim')
-async function updateScoreForOtherUser() {
-	if (!token) return
-
-	// Проверяем, что авторизованный пользователь — это Trofim
-	if (username !== 'Trofim') {
-		alert('У вас нет прав для изменения счета других игроков')
-		return
-	}
-
-	const targetUsername = prompt(
-		'Введите имя пользователя, чей счет вы хотите изменить:'
-	)
-	const newScore = prompt('Введите новый счет для пользователя: ')
-
-	if (!targetUsername || !newScore || isNaN(newScore)) {
-		alert('Неверные данные')
-		return
-	}
-
-	try {
-		const response = await fetch(`${apiUrl}/update-score/${targetUsername}`, {
-			method: 'POST',
-			headers: {
-				Authorization: `Bearer ${token}`,
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ score: parseInt(newScore) }),
-		})
-
-		if (!response.ok) {
-			const errorData = await response.json()
-			throw new Error(errorData.message || 'Ошибка при обновлении счета')
-		}
-
-		const data = await response.json()
-		alert(data.message)
-	} catch (err) {
-		alert(err.message)
-	}
-}
-document
-	.getElementById('update-score-btn')
-	.addEventListener('click', updateScoreForOtherUser)
-
-// Обработчик для кнопки изменения счета другого пользователя
-
 // Функция для клика по монете
 async function clickCoin() {
 	if (!token) return
@@ -338,4 +286,3 @@ if (token) {
 } else {
 	alert('Пожалуйста, войдите в систему')
 }
-
