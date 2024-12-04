@@ -9,6 +9,13 @@
 			href="https://fonts.googleapis.com/css2?family=Jura:wght@300..700&family=Unbounded:wght@200..900&display=swap"
 			rel="stylesheet"
 		/>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Rubik+80s+Fade&family=Tektur:wght@400..900&display=swap" rel="stylesheet">
+
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 		<title>SPASSKKOMBAT</title>
 		<style>
 			html,
@@ -20,7 +27,7 @@
 
 			body {
 				text-align: center;
-				background: #000;
+				background: #0c0916;
 				height: 100%;
 				margin: 0;
 
@@ -28,7 +35,7 @@
 			}
 			/* Стили для топ-3 пользователей */
 			.top-user.gold {
-				background: linear-gradient(180deg, #ffbc6c -1.85%, #b0763f 98.15%),
+				background: linear-gradient(180deg, #e2d6ff -1.85%, #aa97ff 98.15%),
 					#eee0;
 				-webkit-background-clip: text;
 				-webkit-text-fill-color: transparent;
@@ -38,7 +45,7 @@
 			}
 
 			.top-user.silver {
-				background: linear-gradient(180deg, #ffffff -1.85%, #7f7f7f 98.15%),
+				background: linear-gradient(180deg, #e8d6ff -1.85%, #bd6bff 98.15%),
 					rgba(255, 255, 255, 0);
 				-webkit-background-clip: text;
 				-webkit-text-fill-color: transparent;
@@ -47,7 +54,7 @@
 			}
 
 			.top-user.bronze {
-				background: linear-gradient(180deg, #5f3300 -1.85%, #ffa652 98.15%),
+				background: linear-gradient(180deg, #985ac2 -1.85%, #e6dbff 98.15%),
 					#eee0;
 				-webkit-background-clip: text;
 				-webkit-text-fill-color: transparent;
@@ -89,12 +96,12 @@
 			#coin {
 				width: 250px;
 				height: 250px;
-				background-color: #ffffff38;
+				background-color: #6539ad2c;
 				backdrop-filter: blur(30px);
 				cursor: pointer;
 				margin: 0 auto;
 				border-radius: 50%;
-				border: 1px solid #fff;
+				border: 1px solid #6539ad;
 				display: flex;
 				align-items: center;
 				justify-content: center;
@@ -102,7 +109,7 @@
 				margin-top: 15px;
 			}
 			#coin:active {
-				background-color: #ffffffd0;
+				background-color: #d5c3f175;
 			}
 			#stats {
 				margin-top: 20px;
@@ -114,17 +121,20 @@
 
 
 			#top-users {
+				font-family: "Tektur", sans-serif;
 				margin-top: 15px;
 				padding: 20px;
-				background-color: #ffffff00;
+				/* background-color: #6539ad18; */
+				background-color: #2a194618;
 				backdrop-filter: blur(30px);
-				border: 2px solid #ddd;
+				border: 1px solid #6539ad;
 				max-width: 400px;
 				margin-left: auto;
 				margin-right: auto;
 				font-family: 'Jura', serif;
 				font-weight: 900;
-				color: #fff;
+				color: #efe9ff;
+				border-radius: 10px;
 			}
 
 			#top-users p {
@@ -135,16 +145,17 @@
 				color: #bfbfbf;
 			}
 			h1 {
+				
 				color: #ffffff;
 			}
 			h2 {
 				color: #ffffff;
 			}
 			.prize-sub {
+				font-family: "Montserrat Alternates", sans-serif;
 				font-size: 14px;
-				color: #eeeeee;
-				font-family: jura;
-				font-weight: 900;
+				color: #efe9ff;
+				font-weight: 500;
 				padding-left: 10px;
 				padding-right: 10px;
 			}
@@ -160,7 +171,7 @@
 			}
 
 			.blur-pole {
-				background-color: #fff;
+				background-color: #ffffff50;
 				height: 150px;
 				width: 150px;
 				position: absolute;
@@ -195,43 +206,50 @@
 				font-size: 10px;
 			}
 			.rules-span {
-				font-size: 10px;
+				font-size: 12px;
+				font-family: "Montserrat Alternates", sans-serif;
+				font-weight: 500;
 			}
 			#logout-btn{
 				margin: 0 auto;
-				padding: 5px;
+				padding: 8px 12px;
 				display: none;
 			}
 			input{
-				background-color: #000;
-				border: 1.5px solid #fff;
+				background-color: #6539ad18;
+				backdrop-filter: blur(30px);
+				border: 1px solid #6539ad;
 				padding: 13px 0px;
 				color: #fff;
-				border-radius: 0px;
+				border-radius: 10px;
 				
 			}
 			input::placeholder{
 				color: #fff;
+				font-weight: 800;
 				font-family: jura;
 				padding-left: 3px;
+				font-size: 15px;
 			}
 			button {
-				font-family: 'Jura', serif;
+				font-family: "Montserrat Alternates", sans-serif;
 				margin: 10px;
-				padding: 10px 20px;
+				padding: 12px 20px;
 				font-size: 16px;
-				background-color: #ffffff;
+				background-color: #ede2ff;
+				border: 2px solid ;
 				border: none;
-				color: #000000;
-				border: 1px solid #fff;
-				font-weight: 700;
+
+				color: #6539ad;
+				font-weight: 600;
 				transition: 0.1s;
 				cursor: pointer;
+				border-radius: 15px;
+				border: 1px solid #ffffff00;
 			}
 			button:hover{
-				background-color: #000;
+				background-color: #6539adc0;
 				color: #fff;
-				border: 1px solid #fff;
 
 			}
 				.sub-logo{
@@ -244,6 +262,12 @@
 			}
 			.top-spirit{
 				margin-top: 10px;
+			}
+			#score{
+				color: #efe9ff;
+			}
+			#coins{
+				color: #efe9ff;
 			}
 		</style>
 		<script>
@@ -282,8 +306,7 @@
 		<div class="blur-pole"></div>
 		<!-- Элемент для отображения приветствия -->
 		<h1>SPASSK | KOMBAT</h1>
-<!-- 		<div class="sub-logo">x TEAM SPIRIT</div>
-		<img src="spirit-logo.svg" alt=""> -->
+
 		</div>
 		<!-- Приветствие пользователя -->
 		<div id="greeting"></div>
@@ -338,16 +361,13 @@
 			выплачен общий призовой
 			<div class="my-email reward">1100 рублей</div>
 			(до 13.12.24, 00:00).<br />
-			Для выдачи призовых писать модерации<br /> (справа снизу экрана)<br />
-			<!--<img src="spirit-logo.svg" alt="" class="top-spirit"><br>-->
-			<span style="color: #fff;font-family: unbounded; font-weight: 400;">Cезон 2</span>
+			Для выдачи призовых писать модерации<br /> (справа снизу экрана)<br /><br> <br>
+			<span style="color: #fff;font-family: unbounded; font-weight: 400; padding: 10px; border-radius: 10px;background-color: #6539ad2c;border: 1px solid #6539ad;">Cезон 2</span>
 		</div>
-		<!-- <div id="admin-panel" style="display: none;">
-			<h2>Админ Панель</h2>
-			<button id="load-users">Загрузить пользователей</button>
+
 			<ul id="user-list"></ul>
-		</div> -->
-		<div id="top-users">
+
+	<div id="top-users">
 			<!-- Здесь будет отображаться список топовых пользователей -->
 		</div>
 		<div
@@ -367,13 +387,12 @@
 				а ваше место передано игроку перед вами</span>
 		</div>
 <!-- Панель администратора, доступная только Trofim -->
-<button id="update-score-btn" style="display:none; margin: 0 auto;">Изменить счет другого игрока</button>
+
 
 
 	
 		<br>
 		
-	
 
 
 		<script src="game.js"></script>
