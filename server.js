@@ -211,7 +211,7 @@ app.get('/top-users', async (req, res) => {
 	try {
 		const topUsers = await User.find()
 			.sort({ score: -1 }) // Сортировка по убыванию счета
-			.limit(21) // Ограничение до 10 пользователей
+			.limit(25) // Ограничение до 10 пользователей
 
 		res.json(topUsers)
 	} catch (err) {
