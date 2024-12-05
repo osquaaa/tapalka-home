@@ -15,6 +15,7 @@ function updateUI() {
 	const greeting = document.getElementById('greeting')
 	const scoreElement = document.getElementById('score')
 	const coinsElement = document.getElementById('coins')
+	const hrLog = document.getElementById('hr-log')
 	document.getElementById('upgrade-click').textContent = `+1 К КЛИКУ (${
 		coinsPerClick * 100
 	} монет)`
@@ -27,11 +28,13 @@ function updateUI() {
 		loginForm.style.display = 'none'
 		logoutBtn.style.display = 'block'
 		greeting.textContent = `Привет, ${username}`
+		hrLog.style.display = 'none'
 	} else {
 		registerForm.style.display = 'block'
 		loginForm.style.display = 'block'
 		logoutBtn.style.display = 'none'
 		greeting.textContent = ''
+		hrLog.style.display = 'block'
 	}
 
 	scoreElement.textContent = `Очков: ${score}`
