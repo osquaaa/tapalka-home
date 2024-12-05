@@ -5,7 +5,7 @@ let coins = 0
 let coinsPerClick = 1
 let multiplier = 1
 
-const apiUrl = 'https://tapalka-home.vercel.app' // Ваш адрес на Render
+const apiUrl = '' // Ваш адрес на Render
 
 // Обновление интерфейса
 function updateUI() {
