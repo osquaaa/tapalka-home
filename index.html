@@ -307,6 +307,15 @@ box-shadow: 0px 0px 21px -6px rgba(0, 0, 0, 1);
 .timer{
 	margin-top: 15px;
 }
+#hr-log{
+	max-width: 260px;
+	margin-top: 1px;
+	margin-bottom: 12px;
+
+	height: 1.4px; /* Толщина линии */
+	background-color: #eadeff; /* Цвет линии */
+	border: none; /* Убираем любые другие границы */
+}
 		</style>
 		<script>
     (function(d, w, c) {
@@ -357,7 +366,7 @@ box-shadow: 0px 0px 21px -6px rgba(0, 0, 0, 1);
 			<input type="password" id="register-password" placeholder="Пароль" maxlength='20'/><br />
 			<button id="register-btn">Зарегистрироваться</button>
 		</div>
-
+<hr id='hr-log'>
 		<!-- Форма авторизации -->
 		<div id="login-form" style="display: block">
 			<input type="text" id="login-username" placeholder="Имя пользователя" maxlength='20'/>
