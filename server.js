@@ -59,27 +59,31 @@ app.get('/', (req, res) => {
 
 // Регистрация пользователя
 app.post('/register', async (req, res) => {
-    try {
-        const { username, password } = req.body;
+	try {
+		const { username, password } = req.body
 
-        const existingUser = await User.findOne({ username });
-        if (existingUser) {
-            return res
-                .status(400)
-                .json({ message: 'Пользователь с таким именем уже существует' });
-        }
+		const existingUser = await User.findOne({ username })
+		if (existingUser) {
+			return res
+				.status(400)
+				.json({ message: 'Пользователь с таким именем уже существует' })
+		}
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ username, password: hashedPassword });
-        await newUser.save();
+		const hashedPassword = await bcrypt.hash(password, 10)
+		const newUser = new User({ username, password: hashedPassword })
+		await newUser.save()
 
-        const token = jwt.sign({ id: newUser._id }, SECRET_KEY, { expiresIn: '3d' });
-        res.json({ token });
-    } catch (error) {
-        console.error('Ошибка при регистрации:', error);
-        res.status(500).json({ message: 'Внутренняя ошибка сервера' });
-    }
-});
+		const token = jwt.sign({ id: newUser._id }, SECRET_KEY, { expiresIn: '3d' })
+		res.json({ token })
+	} catch (error) {
+		if (error.code === 11000) {
+			// Обработка ошибки дубликата
+			return res.status(400).json({ message: 'Имя пользователя уже занято' })
+		}
+		console.error('Ошибка при регистрации:', error)
+		res.status(500).json({ message: 'Внутренняя ошибка сервера' })
+	}
+})
 
 // Авторизация пользователя
 app.post('/login', async (req, res) => {
