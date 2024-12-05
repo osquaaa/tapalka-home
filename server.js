@@ -125,11 +125,10 @@ function authenticate(req, res, next) {
 app.get('/user/:username', authenticate, async (req, res) => {
     try {
         const { username } = req.params;
-        let user = await User.findOne({ username });
+        const user = await User.findOne({ username });
 
         if (!user) {
-            user = new User({ username });
-            await user.save();
+            return res.status(404).json({ message: 'Пользователь не найден' });
         }
 
         res.json(user);
