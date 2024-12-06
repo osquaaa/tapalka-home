@@ -90,25 +90,25 @@ function displayTopUsers(users) {
 		// Добавляем стили и призы
 		if (index === 0) {
 			userElement.classList.add('top-user', 'gold')
-			prizeText = '(500 руб)'
+			prizeText = '(500₽)'
 		} else if (index === 1) {
 			userElement.classList.add('top-user', 'silver')
-			prizeText = '(300 руб)'
+			prizeText = '(300₽)'
 		} else if (index === 2) {
 			userElement.classList.add('top-user', 'bronze')
-			prizeText = '(250 руб)'
+			prizeText = '(250₽)'
 		} else if (index === 3) {
 			userElement.classList.add('top-user', 'bronze')
-			prizeText = '(150 руб)'
+			prizeText = '(150₽)'
 		} else if (index === 4) {
 			userElement.classList.add('top-user', 'bronze')
-			prizeText = '(100 руб)'
+			prizeText = '(100₽)'
 		} else if (index === 5) {
 			userElement.classList.add('top-user', 'bronze')
-			prizeText = '(100 руб)'
+			prizeText = '(100₽)'
 		} else if (index === 6) {
 			userElement.classList.add('top-user', 'bronze')
-			prizeText = '(100 руб)'
+			prizeText = '(100₽)'
 		} else if (index === 29) {
 			userElement.classList.add('top-user', 'looser')
 			prizeText = '(ЛОХ)'
