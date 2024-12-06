@@ -43,25 +43,20 @@ function updateUI() {
 
 // Функция для обновления данных пользователя
 async function fetchUser() {
-	if (!token) return
+	if (!token) return;
 
 	try {
 		const response = await fetch(`${apiUrl}/user/${username}`, {
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		})
-		if (!response.ok) throw new Error('Пользователь не найден')
+			headers: { Authorization: `Bearer ${token}` },
+		});
 
-		const user = await response.json()
-		score = user.score
-		coins = user.coins
-		coinsPerClick = user.coinsPerClick
-		multiplier = user.multiplier
+		if (!response.ok) throw new Error('Ошибка получения данных пользователя');
 
-		updateUI()
+		const user = await response.json();
+		({ score, coins, coinsPerClick, multiplier } = user); // Деструктуризация
+		updateUI();
 	} catch (err) {
-		alert(err.message)
+		alert(err.message);
 	}
 }
 async function fetchTopUsers() {
@@ -123,26 +118,24 @@ fetchTopUsers()
 setInterval(fetchTopUsers, 7000)
 // Функция для клика по монете
 async function clickCoin() {
-	if (!token) return
+	if (!token) return;
 
 	try {
 		const response = await fetch(`${apiUrl}/click/${username}`, {
 			method: 'POST',
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		})
-		if (!response.ok) throw new Error('Ошибка при обработке клика')
+			headers: { Authorization: `Bearer ${token}` },
+		});
 
-		const { score: updatedScore, coins: updatedCoins } = await response.json()
-		score = updatedScore
-		coins = updatedCoins
-		updateUI()
+		if (!response.ok) throw new Error('Ошибка при обработке клика');
+
+		const { score: updatedScore, coins: updatedCoins } = await response.json();
+		score = updatedScore;
+		coins = updatedCoins;
+		updateUI();
 	} catch (err) {
-		showError(err.message)
+		alert(err.message);
 	}
 }
-
 // Функция для покупки +1 к монетам за клик
 async function buyClickUpgrade() {
 	if (!token) return
@@ -193,75 +186,65 @@ async function buyDoubleUpgrade() {
 
 // Функции для регистрации и авторизации
 async function register() {
-	const usernameInput = document.getElementById('register-username').value
-	const passwordInput = document.getElementById('register-password').value
+	const usernameInput = document.getElementById('register-username').value.trim();
+	const passwordInput = document.getElementById('register-password').value.trim();
 
 	if (!usernameInput || !passwordInput) {
-		alert('Пожалуйста, заполните все поля')
-		return
+		alert('Заполните все поля');
+		return;
 	}
 
 	try {
 		const response = await fetch(`${apiUrl}/register`, {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				username: usernameInput,
-				password: passwordInput,
-				role: 'user',
-			}),
-		})
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ username: usernameInput, password: passwordInput }),
+		});
 
-		if (!response.ok) throw new Error('Ошибка при регистрации')
+		if (!response.ok) throw new Error('Ошибка регистрации');
 
-		const data = await response.json()
-		localStorage.setItem('token', data.token)
-		username = usernameInput
-		localStorage.setItem('username', username)
-		alert('Регистрация успешна!')
-		location.reload()
+		const data = await response.json();
+		localStorage.setItem('token', data.token);
+		localStorage.setItem('username', usernameInput);
+		username = usernameInput;
+
+		alert('Регистрация успешна');
+		location.reload();
 	} catch (err) {
-		alert(err.message)
+		alert(err.message);
 	}
 }
 
 async function login() {
-	const usernameInput = document.getElementById('login-username').value
-	const passwordInput = document.getElementById('login-password').value
+	const usernameInput = document.getElementById('login-username').value.trim();
+	const passwordInput = document.getElementById('login-password').value.trim();
 
 	if (!usernameInput || !passwordInput) {
-		alert('Пожалуйста, заполните все поля')
-		return
+		alert('Заполните все поля');
+		return;
 	}
 
 	try {
 		const response = await fetch(`${apiUrl}/login`, {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				username: usernameInput,
-				password: passwordInput,
-			}),
-		})
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ username: usernameInput, password: passwordInput }),
+		});
 
 		if (!response.ok) {
-			const errorData = await response.json()
-			throw new Error(errorData.message || 'Ошибка авторизации')
+			const { message } = await response.json();
+			throw new Error(message || 'Ошибка авторизации');
 		}
 
-		const data = await response.json()
-		localStorage.setItem('token', data.token)
-		localStorage.setItem('username', usernameInput)
-		username = usernameInput
+		const data = await response.json();
+		localStorage.setItem('token', data.token);
+		localStorage.setItem('username', usernameInput);
+		username = usernameInput;
 
-		alert('Авторизация успешна!')
-		location.reload()
+		alert('Авторизация успешна');
+		location.reload();
 	} catch (err) {
-		alert(err.message)
+		alert(err.message);
 	}
 }
 
