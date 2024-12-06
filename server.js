@@ -110,115 +110,101 @@ function authenticate(req, res, next) {
 }
 
 // Роут для получения данных пользователя
-app.get('/user', authenticate, async (req, res) => {
+app.get('/user/:username', authenticate, async (req, res) => {
     try {
-        const user = await User.findById(req.userId);
+        const { username } = req.params;
+        const user = await User.findOne({ username });
+
         if (!user) {
             return res.status(404).json({ message: 'Пользователь не найден' });
         }
 
-        res.json({
-            username: user.username,
-            score: user.score,
-            coins: user.coins,
-            coinsPerClick: user.coinsPerClick,
-            multiplier: user.multiplier,
-        });
-    } catch (err) {
-        res.status(500).json({ message: 'Ошибка получения данных пользователя' });
+        res.json(user);
+    } catch (error) {
+        console.error('Ошибка получения данных пользователя:', error);
+        res.status(500).json({ message: 'Внутренняя ошибка сервера' });
     }
 });
 
-
 // Роут для обработки кликов
-app.post('/click', authenticate, async (req, res) => {
-    try {
-        const user = await User.findById(req.userId);
-        if (!user) {
-            return res.status(404).json({ message: 'Пользователь не найден' });
-        }
+app.post('/click/:username', authenticate, async (req, res) => {
+    const { username } = req.params;
+    const user = await User.findOne({ username });
 
-        // Обновляем только монеты и счет
-        user.score += user.coinsPerClick * user.multiplier;
-        user.coins += user.coinsPerClick;
-
-        await user.save();
-
-        res.json({
-            score: user.score,
-            coins: user.coins,
-        });
-    } catch (err) {
-        res.status(500).json({ message: 'Ошибка обработки клика' });
+    if (!user) {
+        return res.status(404).json({ message: 'Пользователь не найден' });
     }
+
+    // Обновляем только монеты и счет
+    user.score += user.coinsPerClick * user.multiplier;
+    user.coins += user.coinsPerClick;
+
+    await user.save();
+
+    res.json({
+        score: user.score,
+        coins: user.coins,
+    });
 });
 
 // Роут для покупки улучшения дабл клика
-app.post('/upgrade/double', authenticate, async (req, res) => {
-    try {
-        const user = await User.findById(req.userId);
-        if (!user) {
-            return res.status(404).json({ message: 'Пользователь не найден' });
-        }
+app.post('/upgrade/double/:username', async (req, res) => {
+    const { username } = req.params;
+    const user = await User.findOne({ username });
 
-        const upgradePrice = user.multiplier * 10000;
-        if (user.coins < upgradePrice) {
-            return res
-                .status(400)
-                .json({ message: 'Недостаточно монет для покупки улучшения' });
-        }
-
-        user.coins -= upgradePrice;
-        user.multiplier *= 2;
-        await user.save();
-
-        res.json({ message: 'Улучшение успешно куплено', user });
-    } catch (err) {
-        res.status(500).json({ message: 'Ошибка при покупке улучшения' });
+    if (!user) {
+        return res.status(404).json({ message: 'Пользователь не найден' });
     }
-});
 
+    const upgradePrice = user.multiplier * 10000;
+    if (user.coins < upgradePrice) {
+        return res
+            .status(400)
+            .json({ message: 'Недостаточно монет для покупки улучшения' });
+    }
+
+    user.coins -= upgradePrice;
+    user.multiplier *= 2;
+    await user.save();
+
+    res.json({ message: 'Улучшение успешно куплено', user });
+});
 
 // Роут для покупки улучшения +1 к монетам за клик
-app.post('/upgrade/click', authenticate, async (req, res) => {
-    try {
-        const user = await User.findById(req.userId);
-        if (!user) {
-            return res.status(404).json({ message: 'Пользователь не найден' });
-        }
+app.post('/upgrade/click/:username', authenticate, async (req, res) => {
+    const { username } = req.params;
+    const user = await User.findOne({ username });
 
-        const upgradePrice = user.coinsPerClick * 100;
-        if (user.coins < upgradePrice) {
-            return res
-                .status(400)
-                .json({ message: 'Недостаточно монет для покупки улучшения' });
-        }
-
-        user.coins -= upgradePrice;
-        user.coinsPerClick += 1;
-        await user.save();
-
-        res.json({ message: 'Улучшение успешно куплено', user });
-    } catch (err) {
-        res.status(500).json({ message: 'Ошибка при покупке улучшения' });
+    if (!user) {
+        return res.status(404).json({ message: 'Пользователь не найден' });
     }
-});
 
+    const upgradePrice = user.coinsPerClick * 100;
+    if (user.coins < upgradePrice) {
+        return res
+            .status(400)
+            .json({ message: 'Недостаточно монет для покупки улучшения' });
+    }
+
+    user.coins -= upgradePrice;
+    user.coinsPerClick += 1;
+    await user.save();
+
+    res.json({ message: 'Улучшение успешно куплено', user });
+});
 
 // Роут для получения топа пользователей (по убыванию счета)
 app.get('/top-users', async (req, res) => {
     try {
         const topUsers = await User.find()
-            .sort({ score: -1 })
-            .limit(21)
-            .select('username score'); // Выбираем только нужные поля
+            .sort({ score: -1 }) // Сортировка по убыванию счета
+            .limit(21); // Ограничение до 21 пользователя
 
         res.json(topUsers);
     } catch (err) {
         res.status(500).json({ message: 'Ошибка при получении топа пользователей' });
     }
 });
-
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
