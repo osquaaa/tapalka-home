@@ -74,40 +74,53 @@ async function fetchTopUsers() {
 
 // Функция для отображения топа пользователей
 function displayTopUsers(users) {
-	const topUsersList = document.getElementById('top-users');
-	topUsersList.innerHTML = ''; // Очищаем текущий список
+	const topUsersList = document.getElementById('top-users')
+	topUsersList.innerHTML = '' // Очищаем текущий список
 
 	users.forEach((user, index) => {
-		const userElement = document.createElement('p');
-		let prizeText = '';
-		let prefix = ''; // Префикс перед именем
+		const userElement = document.createElement('p')
+		let prizeText = ''
+		let prefix = '' // Префикс перед именем
 
 		// Добавляем префикс для пользователя с именем Trofim
 		if (user.username === 'Trofim') {
-			prefix = `<span class="ceo-badge">[CEO]</span> `;
+			prefix = `<span class="ceo-badge">[CEO]</span> `
 		}
 
 		// Добавляем стили и призы
 		if (index === 0) {
-			userElement.classList.add('top-user', 'gold');
-			prizeText = '(500 руб)';
+			userElement.classList.add('top-user', 'gold')
+			prizeText = '(500 руб)'
 		} else if (index === 1) {
-			userElement.classList.add('top-user', 'silver');
-			prizeText = '(200 руб)';
+			userElement.classList.add('top-user', 'silver')
+			prizeText = '(200 руб)'
 		} else if (index === 2) {
-			userElement.classList.add('top-user', 'bronze');
-			prizeText = '(100 руб)';
+			userElement.classList.add('top-user', 'bronze')
+			prizeText = '(100 руб)'
+		} else if (index === 3) {
+			userElement.classList.add('top-user', 'bronze')
+			prizeText = '(100 руб)'
+		} else if (index === 4) {
+			userElement.classList.add('top-user', 'bronze')
+			prizeText = '(100 руб)'
+		} else if (index === 5) {
+			userElement.classList.add('top-user', 'bronze')
+			prizeText = '(50 руб)'
+		} else if (index === 6) {
+			userElement.classList.add('top-user', 'bronze')
+			prizeText = '(50 руб)'
 		} else if (index === 29) {
-			userElement.classList.add('top-user', 'looser');
-			prizeText = '(ЛОХ)';
+			userElement.classList.add('top-user', 'looser')
+			prizeText = '(ЛОХ)'
 		} else {
-			userElement.classList.add('top-user');
+			userElement.classList.add('top-user')
 		}
 
 		// Формируем HTML для строки пользователя
-		userElement.innerHTML = `${prefix}${user.username}: ${user.score} очков <span class="prize">${prizeText}</span>`;
-		topUsersList.appendChild(userElement);
-	});
+		userElement.innerHTML = `${prefix}${user.username}: ${user.score} очков <span class="prize">${prizeText}</span>`
+		topUsersList.appendChild(userElement)
+	})
+}
 
 // Загружаем топ пользователей при загрузке страницы
 fetchTopUsers()
