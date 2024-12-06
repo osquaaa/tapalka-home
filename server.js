@@ -59,53 +59,37 @@ app.get('/', (req, res) => {
 
 // Регистрация пользователя
 app.post('/register', async (req, res) => {
+	const { username, password } = req.body;
 	try {
-		const { username, password } = req.body
+		const existing = await User.findOne({ username });
+		if (existing) return res.status(400).json({ message: 'Имя занято' });
 
-		const existingUser = await User.findOne({ username })
-		if (existingUser) {
-			return res
-				.status(400)
-				.json({ message: 'Пользователь с таким именем уже существует' })
-		}
+		const hash = await bcrypt.hash(password, 10);
+		const user = new User({ username, password: hash });
+		await user.save();
 
-		const hashedPassword = await bcrypt.hash(password, 10)
-		const newUser = new User({ username, password: hashedPassword })
-		await newUser.save()
-
-		const token = jwt.sign({ id: newUser._id }, SECRET_KEY, { expiresIn: '3d' })
-		res.json({ token })
+		const token = jwt.sign({ id: user._id }, SECRET_KEY, { expiresIn: '3d' });
+		res.json({ token });
 	} catch (error) {
-		if (error.code === 11000) {
-			// Обработка ошибки дубликата
-			return res.status(400).json({ message: 'Имя пользователя уже занято' })
-		}
-		console.error('Ошибка при регистрации:', error)
-		res.status(500).json({ message: 'Внутренняя ошибка сервера' })
+		res.status(500).json({ message: 'Ошибка регистрации' });
 	}
-})
+});
 
 // Авторизация пользователя
 app.post('/login', async (req, res) => {
-    try {
-        const { username, password } = req.body;
+	const { username, password } = req.body;
+	try {
+		const user = await User.findOne({ username });
+		if (!user) return res.status(404).json({ message: 'Пользователь не найден' });
 
-        const user = await User.findOne({ username });
-        if (!user) {
-            return res.status(400).json({ message: 'Пользователь не найден' });
-        }
+		const valid = await bcrypt.compare(password, user.password);
+		if (!valid) return res.status(401).json({ message: 'Неверный пароль' });
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(400).json({ message: 'Неверный пароль' });
-        }
-
-        const token = jwt.sign({ id: user._id }, SECRET_KEY, { expiresIn: '3d' });
-        res.json({ token });
-    } catch (error) {
-        console.error('Ошибка при авторизации:', error);
-        res.status(500).json({ message: 'Внутренняя ошибка сервера' });
-    }
+		const token = jwt.sign({ id: user._id }, SECRET_KEY, { expiresIn: '3d' });
+		res.json({ token });
+	} catch (error) {
+		res.status(500).json({ message: 'Ошибка авторизации' });
+	}
 });
 
 function authenticate(req, res, next) {
